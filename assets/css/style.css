@@ -3,14 +3,18 @@ body {
   max-width: 1200px;
 }
 
-header{
+.header{
   min-height: 80px;
   background-color: white;
   background: url('../images/header.jpg');
-  background-repeat:repeat;
   width: 100%;
-
 }
+.background_clock{
+  background-color: white;
+  opacity:0.9;
+}
+
+
 h1{
   font-size: 90px;
   text-align: center;
@@ -49,34 +53,14 @@ color: black;
 }
 
 .leftContainerClass{
-  width: 70%;
-  height: auto;
   background-color: white;
   opacity:0.77;
-  min-height: 290px;
-  margin-left: 5%;
-  margin-right: auto;
-  float: left;
 }
+
 .rightContainerClass{
-
   background: url('../images/train.jpg');
-  width: 22%;
-  height: auto;
-  min-height: 170px;
-  margin-left: 2%;
-  margin-right: auto;
-  float: left;
 }
 
-.animalSubcontainer{
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: 12px;
-  height: 250px;
-  width: 360px;
-  float: left;
-}
 
 .border{
 border: 2px;

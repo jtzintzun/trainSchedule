@@ -1,13 +1,21 @@
 // --Buiding the main Screen--------------------------------------------------------
 
+var current_time = moment().format('HH:mm');
+var date = moment().format('MMM Do YY');
+var timer
+
+
+
+
 function buildScreen() {
   // $('#mainContainer').empty()
 
   var div3 = $('<div>');
   div3.attr('id', 'rightContainer');
-  $('#mainContainer').append(div3)
+  $('#containers').append(div3)
   div3.addClass('rightContainerClass')
   div3.addClass('border')
+  div3.addClass('col s12 m3 l3')
   $('#rightContainer').html('<h2>' + 'Add Train' + '</h2>');
 
   var trainName = $('<input/>', {
@@ -50,6 +58,10 @@ function buildScreen() {
   button.attr('id', 'addTrain')
   $('#rightContainer').append(button)
   button.addClass('button')
+
+  $('#clock').append(current_time)
+  $('#date').append(date)
+
 }
 
 buildScreen()
@@ -83,7 +95,7 @@ $('#addTrain').on('click', function(event) {
   trainName =  $('#trainName').val().trim();
   newDestination = $('#newDestination').val().trim();
   firstTrainTime = $('#firstTrainTime').val().trim();
-  frequency = moment($('#frequency').val().trim(),'mm').format('mm');
+  frequency = $('#frequency').val().trim();
   console.log(firstTrainTime);
   console.log(frequency);
 // Change what is saved in firebase
@@ -100,21 +112,58 @@ database.ref().push({
 // database.ref().on("value", function(snapshot) {
  database.ref().on("child_added", function(childSnapshot) {
 
-   console.log(childSnapshot.val());
+   // console.log(childSnapshot.val());
 
-      var current_time = moment().format('HH:mm');
-      var current_time_hours = moment().format('HH');
-      var currentTime = current_time + (current_time_hours * 60)
+      var current_time = moment();
 
-      // var moment().startOf('hour').fromNow()
       var trainNameSS = childSnapshot.val().trainName;
       var newDestinationSS = childSnapshot.val().newDestination;
-      var firstTrainTimeSS = childSnapshot.val().firstTrainTime;
+      var firstTrainTimeSS = moment(childSnapshot.val().firstTrainTime,'HH:mm');
       var frequencySS = childSnapshot.val().frequency;
-      console.log('firstTrainTimeSS');
-      var nextArrival = firstTrainTimeSS - current_time;
-      var minutesAway = current_time - frequencySS;
-      console.log(minutesAway);
+
+      console.log("====Time Now=====");
+      console.log(current_time);
+
+
+      console.log("First Train Time =====");
+      console.log(firstTrainTimeSS);
+
+      var ftt_ct = current_time.diff(firstTrainTimeSS, "minutes");
+
+      console.log("diff btw ftt and ct =====");
+
+      console.log(ftt_ct);
+
+      console.log("train frequency =====");
+
+      console.log( frequencySS);
+
+
+      var temp = Math.trunc(ftt_ct/frequencySS)
+
+if (temp < 0) {
+  temp = temp*-1
+}
+
+      console.log('===log tempo');
+      console.log(temp);
+      temp2 = (temp*frequencySS)
+      temp3 = (ftt_ct-temp2)
+      var minutesAway = frequencySS - temp3
+
+      console.log(minutesAway + " minutesAway")
+
+      var nextArrival = moment().add(minutesAway, 'm');
+
+      nextArrival = moment(nextArrival).format('HH:mm')
+
+      console.log('==== next train arrives at======');
+      console.log(nextArrival);
+
+
+
+      clearTimeout(timer)
+      timer = setTimeout('updateTable()', 350);
 
       updateTable(trainNameSS, newDestinationSS, frequencySS, nextArrival, minutesAway)
 
@@ -129,7 +178,7 @@ database.ref().push({
 var tableID = $('#addRow');
 
 function updateTable(trainNameSS, destination,frequency, nextArrival, minutesAway) {
-
+console.log('updateTable');
 
   var rTag = $('<tr>');
 
