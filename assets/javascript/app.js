@@ -2,8 +2,14 @@
 
 var current_time = moment().format('HH:mm');
 var date = moment().format('MMM Do YY');
-var timer
-
+var trainNameSS
+var newDestinationSS
+var firstTrainTimeSS
+var frequencySS
+var ftt_ct
+var nextArrival
+var minutesAway
+var timeNow
 
 
 
@@ -16,7 +22,7 @@ function buildScreen() {
   div3.addClass('rightContainerClass')
   div3.addClass('border')
   div3.addClass('col s12 m3 l3')
-  $('#rightContainer').html('<h2>' + 'Add Train' + '</h2>');
+  $('#rightContainer').html('<h3>' + 'Add Train' + '</h3>');
 
   var trainName = $('<input/>', {
     type: 'text',
@@ -59,12 +65,13 @@ function buildScreen() {
   $('#rightContainer').append(button)
   button.addClass('button')
 
-  $('#clock').append(current_time)
-  $('#date').append(date)
+  $('#clock').html('<h4>' + timeNow + '</h4>');
+  $('#date').html('<h5>' + date + '</h5>');
 
 }
 
 buildScreen()
+
 
   // Initialize Firebase
   var config = {
@@ -109,61 +116,16 @@ database.ref().push({
 
 }); // end On click event
 
-// database.ref().on("value", function(snapshot) {
+function Snapshot(){
+
  database.ref().on("child_added", function(childSnapshot) {
 
-   // console.log(childSnapshot.val());
+      trainNameSS = childSnapshot.val().trainName;
+      newDestinationSS = childSnapshot.val().newDestination;
+      firstTrainTimeSS = moment(childSnapshot.val().firstTrainTime,'HH:mm');
+      frequencySS = childSnapshot.val().frequency;
 
-      var current_time = moment();
-
-      var trainNameSS = childSnapshot.val().trainName;
-      var newDestinationSS = childSnapshot.val().newDestination;
-      var firstTrainTimeSS = moment(childSnapshot.val().firstTrainTime,'HH:mm');
-      var frequencySS = childSnapshot.val().frequency;
-
-      console.log("====Time Now=====");
-      console.log(current_time);
-
-
-      console.log("First Train Time =====");
-      console.log(firstTrainTimeSS);
-
-      var ftt_ct = current_time.diff(firstTrainTimeSS, "minutes");
-
-      console.log("diff btw ftt and ct =====");
-
-      console.log(ftt_ct);
-
-      console.log("train frequency =====");
-
-      console.log( frequencySS);
-
-
-      var temp = Math.trunc(ftt_ct/frequencySS)
-
-if (temp < 0) {
-  temp = temp*-1
-}
-
-      console.log('===log tempo');
-      console.log(temp);
-      temp2 = (temp*frequencySS)
-      temp3 = (ftt_ct-temp2)
-      var minutesAway = frequencySS - temp3
-
-      console.log(minutesAway + " minutesAway")
-
-      var nextArrival = moment().add(minutesAway, 'm');
-
-      nextArrival = moment(nextArrival).format('HH:mm')
-
-      console.log('==== next train arrives at======');
-      console.log(nextArrival);
-
-
-
-      clearTimeout(timer)
-      timer = setTimeout('updateTable()', 350);
+      time()
 
       updateTable(trainNameSS, newDestinationSS, frequencySS, nextArrival, minutesAway)
 
@@ -172,14 +134,24 @@ if (temp < 0) {
   console.log("The read failed: " + errorObject.code);
 });
 
+}
+
+function minute(){
+    console.log("Hi");
+    current_time = moment()
+    $('#addRow').empty()
+    Snapshot()
+    time()
+    timeNow = moment().format('HH:mm');
+    setTimeout("minute()", 3500);
+}
+
 
 // ---- building the table ---- //
 
-var tableID = $('#addRow');
-
 function updateTable(trainNameSS, destination,frequency, nextArrival, minutesAway) {
 console.log('updateTable');
-
+  var tableID = $('#addRow');
   var rTag = $('<tr>');
 
   var tableTrainName = $('<td>');
@@ -205,3 +177,54 @@ console.log('updateTable');
   tableID.append(rTag)
 
 }
+
+function time(){
+
+  console.log("====Time Now=====");
+  console.log(current_time);
+
+
+  console.log("First Train Time =====");
+  console.log(firstTrainTimeSS);
+
+  var ftt_ct = current_time.diff(firstTrainTimeSS, "minutes");
+
+  console.log("diff btw ftt and ct =====");
+
+  console.log(ftt_ct);
+
+  console.log("train frequency =====");
+
+  console.log( frequencySS);
+
+
+  var temp = Math.trunc(ftt_ct/frequencySS)
+
+if (temp < 0) {
+
+var ftt_ct = firstTrainTimeSS.diff(current_time, "minutes");
+var temp = Math.trunc(ftt_ct/frequencySS)
+
+
+}
+
+  console.log('===log tempo');
+  console.log(temp);
+  temp2 = (temp*frequencySS)
+  temp3 = (ftt_ct-temp2)
+  minutesAway = frequencySS - temp3
+
+  console.log(minutesAway + " minutesAway")
+
+  nextArrival = moment().add(minutesAway, 'm');
+
+  nextArrival = moment(nextArrival).format('HH:mm')
+
+  console.log('==== next train arrives at======');
+  console.log(nextArrival);
+
+}
+
+
+
+minute()
