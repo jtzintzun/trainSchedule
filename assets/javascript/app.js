@@ -113,6 +113,8 @@ database.ref().push({
    firstTrainTime: firstTrainTime,
    frequency: frequency
  });
+$('#div3').empty()
+buildScreen()
 
 }); // end On click event
 
@@ -136,14 +138,16 @@ function Snapshot(){
 
 }
 
+//---update the table every 60 seconds ---//
 function minute(){
-    console.log("Hi");
     current_time = moment()
     $('#addRow').empty()
     Snapshot()
     time()
     timeNow = moment().format('HH:mm');
-    setTimeout("minute()", 3500);
+    $('#clock').html('<h4>' + timeNow + '</h4>');
+    $('#date').html('<h5>' + date + '</h5>');
+    setTimeout("minute()", 60000);
 }
 
 
@@ -178,53 +182,21 @@ console.log('updateTable');
 
 }
 
+//--- Calculating the next arrival and minutes away ----//
+
 function time(){
 
-  console.log("====Time Now=====");
-  console.log(current_time);
-
-
-  console.log("First Train Time =====");
-  console.log(firstTrainTimeSS);
-
+if (current_time > firstTrainTimeSS) {
   var ftt_ct = current_time.diff(firstTrainTimeSS, "minutes");
-
-  console.log("diff btw ftt and ct =====");
-
-  console.log(ftt_ct);
-
-  console.log("train frequency =====");
-
-  console.log( frequencySS);
-
-
-  var temp = Math.trunc(ftt_ct/frequencySS)
-
-if (temp < 0) {
-
-var ftt_ct = firstTrainTimeSS.diff(current_time, "minutes");
-var temp = Math.trunc(ftt_ct/frequencySS)
-
-
+} else {
+  var ftt_ct = (current_time.diff(firstTrainTimeSS, "minutes"))* -1;
 }
-
-  console.log('===log tempo');
-  console.log(temp);
+  var temp = Math.trunc(ftt_ct/frequencySS)
   temp2 = (temp*frequencySS)
   temp3 = (ftt_ct-temp2)
   minutesAway = frequencySS - temp3
-
-  console.log(minutesAway + " minutesAway")
-
   nextArrival = moment().add(minutesAway, 'm');
-
   nextArrival = moment(nextArrival).format('HH:mm')
-
-  console.log('==== next train arrives at======');
-  console.log(nextArrival);
-
 }
-
-
 
 minute()

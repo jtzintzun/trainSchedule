@@ -76,6 +76,9 @@ color: black;
 }
 
 .rightContainerClass{
+  /* background-color: white; */
+  /* opacity: .9;
+  border-radius: 5px; */
   background: url('../images/train.jpg');
 }
 
